@@ -1,0 +1,581 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: #ffffff;
+    color: #000000;
+    padding: 16px;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+@media (max-width: 600px) {
+    .container {
+        max-width: 100%;
+    }
+}
+
+h1 {
+    font-size: 20px;
+    margin-bottom: 16px;
+    text-align: center;
+    color: #000000;
+}
+
+.error {
+    background-color: #fee;
+    color: #c33;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    border: 1px solid #fcc;
+}
+
+#player-container {
+    margin-bottom: 20px;
+}
+
+.scrubber-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+}
+
+.scrubber-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.scrubber-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.scrubber-end-label {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: #666666;
+    min-width: 60px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.scrubber-wrapper .scrubber-input {
+    flex: 1;
+}
+
+.scrubber-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.scrubber-label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #000000;
+}
+
+.scrubber-time-display {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    color: #666666;
+}
+
+.scrubber-input {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: #ffffff;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+/* Triangular thumb for coarse scrubber */
+.scrubber-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 20px solid #3390ec;
+    background: transparent;
+    cursor: pointer;
+    margin-top: -2px;
+    transition: transform 0.1s, border-bottom-color 0.1s;
+    position: relative;
+}
+
+.scrubber-input::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    border-bottom-color: #2a7fd4;
+}
+
+.scrubber-input::-webkit-slider-thumb:active {
+    transform: scale(1.2);
+    border-bottom-color: #1f5fa0;
+}
+
+.scrubber-input::-moz-range-thumb {
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 20px solid #3390ec;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 0;
+    transition: transform 0.1s, border-bottom-color 0.1s;
+}
+
+.scrubber-input::-moz-range-thumb:hover {
+    transform: scale(1.1);
+    border-bottom-color: #2a7fd4;
+}
+
+.scrubber-input::-moz-range-thumb:active {
+    transform: scale(1.2);
+    border-bottom-color: #1f5fa0;
+}
+
+.scrubber-input::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(to right, 
+        #3390ec 0%, 
+        #3390ec var(--progress, 0%), 
+        #cccccc var(--progress, 0%), 
+        #cccccc 100%);
+    border-radius: 4px;
+}
+
+.scrubber-input::-moz-range-track {
+    width: 100%;
+    height: 8px;
+    background: #cccccc;
+    border-radius: 4px;
+}
+
+.scrubber-input::-moz-range-progress {
+    height: 8px;
+    background: #3390ec;
+    border-radius: 4px;
+}
+
+/* Stadiometer-style fine scrubber */
+.stadiometer-container {
+    position: relative;
+    width: 100%;
+    height: 60px;
+    margin: 8px 0;
+}
+
+.stadiometer-viewport {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #ffffff;
+    border-radius: 4px;
+    border: 1px solid #cccccc;
+    cursor: grab;
+    user-select: none;
+}
+
+.stadiometer-viewport:active {
+    cursor: grabbing;
+}
+
+.stadiometer-scale {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    /* Ruler-style background using repeated gradients (no JS ticks needed) */
+    background-color: #ffffff;
+    background-image:
+        /* main 1s ticks */
+        linear-gradient(90deg,
+            rgba(73, 73, 73, 0.5) 0,
+            rgba(73, 73, 73, 0.5) 2%,
+            transparent 2%
+        ),
+        /* mid grid line */
+        linear-gradient(180deg,
+            #ffffff 50%,
+            transparent 50%
+        ),
+        /* secondary ticks */
+        linear-gradient(90deg,
+            transparent 50%,
+            rgba(73, 73, 73, 0.5) 50%,
+            rgba(73, 73, 73, 0.5) 52%,
+            transparent 52%
+        ),
+        /* lower grid line */
+        linear-gradient(180deg,
+            #ffffff 70%,
+            transparent 70%
+        );
+    /* 50px period horizontally, full height vertically */
+    background-size: 50px 100%;
+    background-repeat: repeat-x;
+    will-change: transform;
+}
+
+.stadiometer-tick {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 2px;
+}
+
+.stadiometer-tick-major {
+    width: 2px;
+    height: 20px;
+    background-color: #000000;
+    order: 2; /* Tick mark comes after label */
+}
+
+.stadiometer-tick-minor {
+    width: 1px;
+    height: 10px;
+    background-color: #666666;
+    align-self: flex-end;
+}
+
+.stadiometer-tick-label {
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    color: #666666;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    order: 1; /* Label comes before tick mark */
+    line-height: 1;
+}
+
+.stadiometer-time-label {
+    font-family: 'Courier New', monospace;
+    font-size: 9px;
+    color: #666666;
+    padding-top: 2px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.stadiometer-indicator {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 100%;
+    background-color: #3390ec;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.stadiometer-indicator::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid #3390ec;
+}
+
+.stadiometer-indicator::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 8px solid #3390ec;
+}
+
+.embed-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    max-width: 100%;
+    border-radius: 8px;
+    background-color: #000;
+}
+
+.embed-container iframe,
+.embed-container object,
+.embed-container embed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.timestamp-display {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.timestamp-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+}
+
+.timestamp-item label {
+    font-weight: 600;
+    min-width: 50px;
+    color: #000000;
+}
+
+.timestamp-item span {
+    flex: 1;
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    color: #666666;
+}
+
+.current-time {
+    text-align: center;
+    padding: 12px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #000000;
+}
+
+.current-time span {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+}
+
+.download-mode-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    gap: 12px;
+}
+
+.toggle-label {
+    font-weight: 600;
+    color: #000000;
+    font-size: 14px;
+}
+
+.toggle-switch {
+    display: flex;
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 2px;
+    gap: 2px;
+    position: relative;
+}
+
+.toggle-switch input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-switch .toggle-option {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #666666;
+    background-color: transparent;
+    user-select: none;
+}
+
+.toggle-switch input[type="radio"]:checked + .toggle-option {
+    background-color: #3390ec;
+    color: #ffffff;
+}
+
+.toggle-switch .toggle-option:hover {
+    opacity: 0.8;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.btn {
+    flex: 1;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.btn:active {
+    opacity: 0.7;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background-color: #3390ec;
+    color: #ffffff;
+}
+
+.btn-success {
+    background-color: #4caf50;
+    color: #ffffff;
+}
+
+.btn-secondary {
+    background-color: #f0f0f0;
+    color: #000000;
+}
+
+/* URL Input Section */
+.url-input-section {
+    margin-bottom: 20px;
+    padding: 16px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+}
+
+.url-input-section label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #000000;
+}
+
+.url-input-group {
+    display: flex;
+    gap: 8px;
+}
+
+#video-url-input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+}
+
+#video-url-input:focus {
+    outline: none;
+    border-color: #3390ec;
+}
+
+/* Download Status Section */
+.download-status {
+    margin-top: 20px;
+    padding: 16px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.status-message {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #000000;
+}
+
+.btn-large {
+    padding: 16px 32px;
+    font-size: 18px;
+}
+
+.btn-download {
+    background-color: #4caf50;
+    color: #ffffff;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-download:hover {
+    opacity: 0.9;
+}
+
+.download-note {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+}
+
+@media (max-width: 480px) {
+    .timestamp-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .timestamp-item label {
+        min-width: auto;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .url-input-group {
+        flex-direction: column;
+    }
+    
+    #load-video-btn {
+        width: 100%;
+    }
+}
+

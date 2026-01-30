@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Downloader</title>
+    <link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+    <div class="container">
+        <h1>YouTube Video Downloader</h1>
+        
+        <div id="error-message" class="error" style="display: none;"></div>
+        
+        <!-- URL Input Section -->
+        <div class="url-input-section">
+            <label for="video-url-input">YouTube Video URL:</label>
+            <div class="url-input-group">
+                <input type="text" id="video-url-input" placeholder="Paste YouTube URL here..." />
+                <button id="load-video-btn" class="btn btn-primary">Load Video</button>
+            </div>
+        </div>
+        
+        <div id="player-container"></div>
+        
+        <div class="controls" id="controls-section" style="display: none;">
+            <div class="scrubber-container">
+                <div class="scrubber-section">
+                    <div class="scrubber-header">
+                        <label class="scrubber-label">Video Timeline</label>
+                        <span class="scrubber-time-display" id="fine-time">0:00.000</span>
+                    </div>
+                    <div class="stadiometer-container">
+                        <div class="stadiometer-viewport" id="fine-scrubber-viewport">
+                            <div class="stadiometer-scale" id="fine-scrubber-scale">
+                                <!-- Tick marks and labels will be generated dynamically -->
+                            </div>
+                        </div>
+                        <div class="stadiometer-indicator" id="fine-scrubber-indicator"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="timestamp-display">
+                <div class="timestamp-item">
+                    <label>Start:</label>
+                    <span id="start-time">Not set</span>
+                    <button id="set-start-btn" class="btn btn-primary">Set as Start</button>
+                </div>
+                <div class="timestamp-item">
+                    <label>End:</label>
+                    <span id="end-time">Not set</span>
+                    <button id="set-end-btn" class="btn btn-primary">Set as End</button>
+                </div>
+            </div>
+            
+            <div class="current-time">
+                <span>Current: <span id="current-time">0:00</span></span>
+            </div>
+            
+            <div class="download-mode-toggle">
+                <label class="toggle-label">Download Mode:</label>
+                <div class="toggle-switch">
+                    <input type="radio" id="mode-video" name="download-mode" value="video" checked>
+                    <label for="mode-video" class="toggle-option">Video</label>
+                    <input type="radio" id="mode-audio" name="download-mode" value="audio">
+                    <label for="mode-audio" class="toggle-option">Audio</label>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button id="confirm-btn" class="btn btn-success" disabled>Confirm & Prepare Download</button>
+                <button id="reset-btn" class="btn btn-secondary">Reset</button>
+            </div>
+            
+            <div id="download-status" class="download-status" style="display: none;">
+                <div class="status-message" id="status-message"></div>
+                <div id="download-link-container" style="display: none; margin-top: 15px;">
+                    <a id="download-link" class="btn btn-large btn-download" download>
+                        Download File
+                    </a>
+                    <p class="download-note">Note: This is a one-time download link that expires after use.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="player.js?v=3"></script>
+    <script src="app.js?v=3"></script>
+</body>
+</html>
+

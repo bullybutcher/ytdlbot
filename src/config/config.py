@@ -53,6 +53,40 @@ TOKEN_PRICE = get_env("TOKEN_PRICE", 10)  # 1 USD=10 downloads
 TG_NORMAL_MAX_SIZE = 2000 * 1024 * 1024
 CAPTION_URL_LENGTH_LIMIT = 150
 
-# This will set the value for the tmpfile path(engine path). If not, will return None and use system’s default path.
+# This will set the value for the tmpfile path(engine path). If not, will return None and use system's default path.
 # Please ensure that the directory exists and you have necessary permissions to write to it.
 TMPFILE_PATH = get_env("TMPFILE_PATH")
+
+# Proxy settings
+PROXY_FILE = get_env("PROXY_FILE", "proxy.json")
+MAX_PROXY_WORKERS = get_env("MAX_PROXY_WORKERS", 2)
+
+# Web server settings
+ENABLE_WEB_SERVER = get_env("ENABLE_WEB_SERVER", False)
+WEBHOOK_URL = get_env("WEBHOOK_URL")
+WEBHOOK_SECRET = get_env("WEBHOOK_SECRET")
+WEBHOOK_PATH = get_env("WEBHOOK_PATH", "/webhook")
+HOST = get_env("HOST", "0.0.0.0")
+PORT = get_env("PORT", 8000)
+MINI_APP_URL = get_env("MINI_APP_URL")
+
+# Resource management
+MAX_DISK_USAGE_MB = get_env("MAX_DISK_USAGE_MB", 1000)
+MAX_MEMORY_USAGE_MB = get_env("MAX_MEMORY_USAGE_MB", 2000)
+MAX_CONCURRENT_DOWNLOADS = get_env("MAX_CONCURRENT_DOWNLOADS", 10)
+MAX_CONCURRENT_PER_IP = get_env("MAX_CONCURRENT_PER_IP", 3)
+
+# Public download API settings
+PUBLIC_DOWNLOAD_TTL_SECONDS = get_env("PUBLIC_DOWNLOAD_TTL_SECONDS", 1800)  # 30 minutes
+PUBLIC_MAX_FILE_SIZE_MB = get_env("PUBLIC_MAX_FILE_SIZE_MB", 200)
+PUBLIC_CLEANUP_INTERVAL_SECONDS = get_env("PUBLIC_CLEANUP_INTERVAL_SECONDS", 60)
+PUBLIC_JOB_RETENTION_SECONDS = get_env("PUBLIC_JOB_RETENTION_SECONDS", 3600)
+
+# Security settings
+PRODUCTION = get_env("PRODUCTION", False)
+MAX_SEGMENT_DURATION = get_env("MAX_SEGMENT_DURATION", 600)  # 10 minutes
+MAX_REQUEST_SIZE_MB = get_env("MAX_REQUEST_SIZE_MB", 1)
+RATE_LIMIT_CREATE = get_env("RATE_LIMIT_CREATE", "5/minute")
+RATE_LIMIT_STATUS = get_env("RATE_LIMIT_STATUS", "30/minute")
+RATE_LIMIT_DOWNLOAD = get_env("RATE_LIMIT_DOWNLOAD", "10/minute")
+ALLOWED_ORIGINS = get_env("ALLOWED_ORIGINS", "")

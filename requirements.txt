@@ -18,3 +18,6 @@ kurigram==2.2.15
 cryptography>=43.0.3
 yt-dlp[default,curl-cffi]==2025.11.12
 yt-dlp-ejs==0.3.1
+fastapi>=0.104.0
+uvicorn>=0.24.0
+slowapi>=0.1.9
