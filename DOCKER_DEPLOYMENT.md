@@ -9,6 +9,18 @@ This is the **simplest way** to deploy ytdlbot on Ubuntu. Docker handles all dep
 - At least 2GB RAM (4GB+ recommended)
 - At least 20GB free disk space
 
+## Quick Start (Just the Bot)
+
+If you only want the Telegram bot (no web UI), it's super simple:
+
+```bash
+# 1. Create .env with Telegram credentials
+# 2. Run:
+docker compose up -d
+```
+
+That's it! No nginx, no web server setup needed. The bot works exactly like the original ytdlbot.
+
 ## Step 1: Install Docker and Docker Compose
 
 ```bash
@@ -123,13 +135,30 @@ sleep 30
 docker compose exec mysql mysql -uroot -proot -e "CREATE DATABASE IF NOT EXISTS ytdlbot CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 ```
 
-## Step 5: Build and Start Everything
+## Step 5: Create Caddyfile (Optional - only if using domain)
+
+If you want to use a domain name with automatic HTTPS, create `Caddyfile`:
+
+```bash
+nano Caddyfile
+```
+
+Add (replace `your-domain.com` with your actual domain):
+```caddyfile
+your-domain.com {
+    reverse_proxy ytdl:8000
+}
+```
+
+**Note**: If you don't have a domain, you can skip this step and access the web UI directly at `http://your-server-ip:8000` (but you'll need to expose port 8000 in docker-compose.yml).
+
+## Step 6: Build and Start Everything
 
 ```bash
 # Build the Docker image (includes all dependencies: Python, ffmpeg, aria2, deno)
 docker compose build
 
-# Start all services (bot, web server, MySQL, Redis)
+# Start all services (bot, web server, MySQL, Redis, Caddy)
 docker compose up -d
 
 # View logs
@@ -138,7 +167,9 @@ docker compose logs -f
 
 That's it! 🎉
 
-## Step 6: Verify Everything Works
+**If using Caddy with a domain**: Caddy will automatically get SSL certificates and your site will be available at `https://your-domain.com`
+
+## Step 8: Verify Everything Works
 
 ```bash
 # Check all containers are running
@@ -155,9 +186,66 @@ curl http://localhost:8000/health
 # Send /start to your bot
 ```
 
-## Step 7: Setup Reverse Proxy (Optional - for domain access)
+## Step 7: Setup Caddy Reverse Proxy (OPTIONAL - recommended for domain/SSL)
 
-If you want to access the web UI via a domain name:
+**Note**: Caddy is completely optional! The bot works fine without it. You only need Caddy if:
+- You want to access the web UI via a domain name (instead of IP:8000)
+- You want automatic SSL/HTTPS certificates (Caddy does this automatically!)
+- You want a reverse proxy
+
+If you're just using the Telegram bot or accessing the web UI via `http://your-ip:8000`, skip this step!
+
+**Why Caddy?** Caddy automatically handles SSL certificates via Let's Encrypt - no manual certbot setup needed!
+
+### Option A: Using docker-compose (Recommended)
+
+The `docker-compose.yml` already includes a Caddy service! Just:
+
+1. **Create Caddyfile** in the project root:
+
+```bash
+nano Caddyfile
+```
+
+Add:
+```caddyfile
+# Replace 'your-domain.com' with your actual domain
+your-domain.com {
+    reverse_proxy ytdl:8000
+    
+    # Optional: Security headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Frame-Options "SAMEORIGIN"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+}
+```
+
+2. **Restart services**:
+```bash
+docker compose up -d
+```
+
+That's it! Caddy will automatically:
+- Get SSL certificates from Let's Encrypt
+- Handle HTTPS redirects
+- Reverse proxy to your app
+
+### Option B: Development (No Domain)
+
+If you don't have a domain yet, use HTTP only:
+
+```caddyfile
+:80 {
+    reverse_proxy ytdl:8000
+}
+```
+
+### Option C: Using Nginx (Alternative)
+
+If you prefer nginx instead of Caddy:
 
 ```bash
 # Install Nginx
@@ -193,11 +281,8 @@ Enable and restart:
 sudo ln -s /etc/nginx/sites-available/ytdlbot /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl restart nginx
-```
 
-## Step 8: Setup SSL (Optional)
-
-```bash
+# Setup SSL with certbot
 sudo apt install -y certbot python3-certbot-nginx
 sudo certbot --nginx -d yourdomain.com
 ```
@@ -263,12 +348,17 @@ docker compose exec mysql mysql -uroot -proot -e "SHOW DATABASES;"
 # Check if web server is enabled in .env
 grep ENABLE_WEB_SERVER .env
 
-# Check if port 8000 is exposed
+# Check if containers are running
 docker compose ps
-# Should show: 0.0.0.0:8000->8000/tcp
 
-# Test from inside container
+# Test from inside app container
 docker compose exec ytdl curl http://localhost:8000/health
+
+# Check Caddy logs
+docker compose logs caddy
+
+# Test Caddy can reach app
+docker compose exec caddy curl http://ytdl:8000/health
 ```
 
 ### Bot not responding

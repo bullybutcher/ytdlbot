@@ -38,6 +38,7 @@ services:
   ytdl:
     build: .
     # image: bennythink/ytdlbot  # Uncomment to use pre-built image instead of building
+    container_name: ytdlbot-app
     env_file:
       - .env
     restart: always
@@ -47,7 +48,7 @@ services:
       - ./mini_app:/app/mini_app:ro  # Mini app static files
       - ./public_web:/app/public_web:ro  # Public web UI static files
     ports:
-      - "8000:8000"  # Web server port (if ENABLE_WEB_SERVER=True)
+      - "8000:8000"  # Expose for direct access (optional - comment out if only using Caddy)
     depends_on:
       redis:
         condition: service_healthy
@@ -59,3 +60,21 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: ytdlbot-caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - ytdl
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:
