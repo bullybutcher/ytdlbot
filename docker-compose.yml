@@ -36,14 +36,26 @@ services:
         max-file: "3"
 
   ytdl:
-    image: bennythink/ytdlbot
+    build: .
+    # image: bennythink/ytdlbot  # Uncomment to use pre-built image instead of building
     env_file:
       - .env
     restart: always
     volumes:
-      - ./youtube-cookies.txt:/app/youtube-cookies.txt
+      - ./youtube-cookies.txt:/app/youtube-cookies.txt:ro
+      - ./proxy.json:/app/proxy.json:ro  # Proxy file (optional)
+      - ./mini_app:/app/mini_app:ro  # Mini app static files
+      - ./public_web:/app/public_web:ro  # Public web UI static files
+    ports:
+      - "8000:8000"  # Web server port (if ENABLE_WEB_SERVER=True)
     depends_on:
       redis:
         condition: service_healthy
       mysql:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health').raise_for_status()"] || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

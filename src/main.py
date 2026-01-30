@@ -404,6 +404,18 @@ if __name__ == "__main__":
     scheduler = BackgroundScheduler()
     scheduler.add_job(reset_free, "cron", hour=0, minute=0)
     scheduler.start()
+    
+    # Start web server in background thread if enabled
+    from config import ENABLE_WEB_SERVER
+    if ENABLE_WEB_SERVER:
+        try:
+            from web_server import start_web_server
+            web_thread = threading.Thread(target=start_web_server, daemon=True)
+            web_thread.start()
+            logging.info("Web server started in background thread")
+        except Exception as e:
+            logging.error(f"Failed to start web server: {e}")
+    
     banner = f"""
 ▌ ▌         ▀▛▘     ▌       ▛▀▖              ▜            ▌
 ▝▞  ▞▀▖ ▌ ▌  ▌  ▌ ▌ ▛▀▖ ▞▀▖ ▌ ▌ ▞▀▖ ▌  ▌ ▛▀▖ ▐  ▞▀▖ ▝▀▖ ▞▀▌

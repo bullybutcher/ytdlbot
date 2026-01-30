@@ -11,6 +11,9 @@ WORKDIR /app
 RUN apk update && apk add --no-cache ffmpeg aria2 deno
 COPY --from=pybuilder /build/.venv/lib/ /usr/local/lib/
 COPY src /app
+# Copy mini app and public web UI directories if they exist
+COPY mini_app /app/mini_app 2>/dev/null || true
+COPY public_web /app/public_web 2>/dev/null || true
 WORKDIR /app
 
 CMD ["python" ,"main.py"]
